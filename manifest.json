@@ -1,17 +1,13 @@
-
-{"manifest_version": 2,
-
- "name": "Getting started example",
- "description": "This extension shows a Google Image search result for the current page",
- "version": "1.0",
-
- "browser_action": {
-	"default_icon": "icon.png",
-	"default_popup": "popup.html",
-  "default_title": "It's so FLUFFY!!"
- },
-"permissions": [
-	"activeTab",
-	"https://ajax.googleapis.com/"
- ]
+{
+  "name": "Typed URL History",
+  "version": "1.2",
+  "description": "Reads your history, and shows the top ten pages you go to by typing the URL.",
+  "permissions": [
+    "history"
+  ],
+  "browser_action": {
+    "default_popup": "typedUrls.html",
+    "default_icon": "clock.png"
+  },
+  "manifest_version": 2
 }
