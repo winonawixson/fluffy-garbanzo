@@ -14,32 +14,42 @@ function onAnchorClick(event) {
 
 // Given an array of URLs, build a DOM list of those URLs in the
 // browser action popup.
-function buildPopupDom(divName, data) {
+function buildPopupDom(divName, data, totalCount) {
   var popupDiv = document.getElementById(divName);
 
-  var ul = document.createElement('ul');
-  popupDiv.appendChild(ul);
+  var ol = document.createElement('ol');
+  popupDiv.appendChild(ol);
 
   for (var i = 0, ie = data.length; i < ie; ++i) {
     var a = document.createElement('a');
     a.href = data[i];
-    a.appendChild(document.createTextNode(data[i]));
-    a.addEventListener('click', onAnchorClick);
+    var firstChild = document.createTextNode(data[i]);
+    a.appendChild(firstChild);
+    firstChild.addEventListener('click', onAnchorClick);
 
     var li = document.createElement('li');
     li.appendChild(a);
 
-    ul.appendChild(li);
+    var ul = document.createElement('ul');
+    li.appendChild(ul);
+
+    var li2 = document.createElement('li');
+    ul.appendChild(li2);
+    li2.appendChild(document.createTextNode("total: " + totalCount[data[i]]));
+
+    ol.appendChild(li);
   }
 }
+
+// popupdiv -- ol --li -- a -- first child --
 
 // Search history to find up to ten links that a user has typed in,
 // and show those links in a popup.
 function buildTypedUrlList(divName) {
-  // To look for history items visited in the last week,
-  // subtract a week of microseconds from the current time.
-  var microsecondsPerWeek = 1000 * 60 * 60 * 24 * 7;
-  var oneWeekAgo = (new Date).getTime() - microsecondsPerWeek;
+  // To look for history items visited in the last day,
+  // subtract a day of microseconds from the current time.
+  var microsecondsPerDay = 1000 * 60 * 60 * 24;
+  var oneDayAgo = (new Date).getTime() - microsecondsPerDay;
 
   // Track the number of callbacks from chrome.history.getVisits()
   // that we expect to get.  When it reaches zero, we have all results.
@@ -47,8 +57,9 @@ function buildTypedUrlList(divName) {
 
   chrome.history.search({
       'text': '',              // Return every history item....
-      'startTime': oneWeekAgo  // that was accessed less than one week ago.
+      'startTime': oneDayAgo  // that was accessed less than one day ago.
     },
+
     function(historyItems) {
       // For each history item, get details on all visits.
       for (var i = 0; i < historyItems.length; ++i) {
@@ -110,7 +121,7 @@ function buildTypedUrlList(divName) {
       return urlToCount[b] - urlToCount[a];
     });
 
-    buildPopupDom(divName, urlArray.slice(0, 10));
+    buildPopupDom(divName, urlArray.slice(0, 10), urlToCount);
   };
 }
 
